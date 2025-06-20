@@ -29,6 +29,114 @@
             margin-bottom: 30px;
             display: none;
         }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: #f8f9fa;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .results {
+            display: none;
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        .country-results {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #eaeaea;
+        }
+        h2 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 12px;
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .breakdown {
+            margin-bottom: 20px;
+        }
+        .tax-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .total {
+            font-weight: bold;
+            font-size: 18px;
+            padding: 15px 0;
+            border-top: 2px solid #3498db;
+            margin-top: 10px;
+        }
+        .note {
+            font-size: 14px;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+        .currency-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+        .exchange-rate {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 8px;
+            font-style: italic;
+        }
+        .expense-impact {
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            border-left: 4px solid #3498db;
+        }
+        .input-row {
+            display: flex;
+            gap: 20px;
+        }
+        .input-row > div {
+            flex: 1;
+        }
         .checkbox-group {
             margin: 30px 0;
             display: flex;
@@ -52,21 +160,6 @@
             margin: 20px 0;
             text-align: left;
         }
-        button {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 14px 24px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 17px;
-            font-weight: 600;
-            transition: background-color 0.3s;
-            margin-top: 15px;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
         button:disabled {
             background-color: #95a5a6;
             cursor: not-allowed;
@@ -75,7 +168,6 @@
             color: #2c3e50;
             margin-bottom: 20px;
         }
-        /* ... (other styles remain unchanged) ... */
     </style>
 </head>
 <body>
@@ -95,7 +187,103 @@
     </div>
     
     <div id="calculator" class="calculator">
-        <!-- Calculator content remains unchanged -->
+        <div class="input-row">
+            <div class="input-group">
+                <label for="income">Annual Trading Income:</label>
+                <input type="number" id="income" min="0" step="0.01" placeholder="Enter amount">
+            </div>
+            
+            <div class="input-group">
+                <label for="expenses">Business Expenses:</label>
+                <input type="number" id="expenses" min="0" step="0.01" placeholder="Enter amount">
+            </div>
+        </div>
+        
+        <div class="input-row">
+            <div class="input-group">
+                <label for="currency">Income Currency:</label>
+                <select id="currency">
+                    <option value="GBP">GBP (£)</option>
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label for="expense-currency">Expense Currency:</label>
+                <select id="expense-currency">
+                    <option value="GBP">GBP (£)</option>
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                </select>
+            </div>
+        </div>
+        
+        <button id="calculate">Calculate Tax</button>
+    </div>
+    
+    <div class="results" id="results">
+        <div class="currency-selector">
+            <span>Display results in:</span>
+            <select id="display-currency">
+                <option value="GBP">GBP (£)</option>
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+            </select>
+            <span id="exchange-rate-info" class="exchange-rate"></span>
+        </div>
+        
+        <!-- UK Module -->
+        <div class="country-results" id="uk-results">
+            <h2>UK Tax Breakdown</h2>
+            <div class="breakdown" id="uk-breakdown"></div>
+            <div class="total">
+                <div class="tax-item">
+                    <span>Total Tax:</span>
+                    <span id="uk-total-tax"></span>
+                </div>
+                <div class="tax-item">
+                    <span>Take-home Amount:</span>
+                    <span id="uk-takehome"></span>
+                </div>
+            </div>
+            <div class="expense-impact">
+                <div class="tax-item">
+                    <span>Tax Savings from Expenses:</span>
+                    <span id="uk-expense-savings"></span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Spain Module -->
+        <div class="country-results" id="spain-results">
+            <h2>Spain Tax Breakdown</h2>
+            <div class="breakdown" id="spain-breakdown"></div>
+            <div class="total">
+                <div class="tax-item">
+                    <span>Total Tax:</span>
+            <span id="spain-total-tax"></span>
+                </div>
+                <div class="tax-item">
+                    <span>Transaction Tax (0.2%):</span>
+                    <span id="spain-transaction-tax"></span>
+                </div>
+                <div class="tax-item">
+                    <span>Take-home Amount:</span>
+                    <span id="spain-takehome"></span>
+                </div>
+            </div>
+            <div class="expense-impact">
+                <div class="tax-item">
+                    <span>Tax Savings from Expenses:</span>
+                    <span id="spain-expense-savings"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="note">
+            <p><strong>Note:</strong> For CFD traders in Spain, business expenses are not deductible from capital gains tax. In the UK, expenses are deductible for professional traders. Spain includes a 0.2% financial transaction tax. Exchange rates update automatically. Results are estimates - consult a tax professional for personalized advice.</p>
+        </div>
     </div>
 
     <script>
@@ -104,19 +292,319 @@
         const calculatorDiv = document.getElementById('calculator');
         const disclaimerCheck = document.getElementById('disclaimer-check');
         const proceedBtn = document.getElementById('proceed-btn');
+        const resultsDiv = document.getElementById('results');
         
-        // Enable proceed button when checkbox is checked
+        // Calculator DOM elements
+        const incomeInput = document.getElementById('income');
+        const expensesInput = document.getElementById('expenses');
+        const currencySelect = document.getElementById('currency');
+        const expenseCurrencySelect = document.getElementById('expense-currency');
+        const displayCurrencySelect = document.getElementById('display-currency');
+        const calculateBtn = document.getElementById('calculate');
+        const spainBreakdown = document.getElementById('spain-breakdown');
+        const spainTotalTax = document.getElementById('spain-total-tax');
+        const spainTransactionTax = document.getElementById('spain-transaction-tax');
+        const spainTakehome = document.getElementById('spain-takehome');
+        const spainExpenseSavings = document.getElementById('spain-expense-savings');
+        const ukBreakdown = document.getElementById('uk-breakdown');
+        const ukTotalTax = document.getElementById('uk-total-tax');
+        const ukTakehome = document.getElementById('uk-takehome');
+        const ukExpenseSavings = document.getElementById('uk-expense-savings');
+        const exchangeRateInfo = document.getElementById('exchange-rate-info');
+        
+        // Tax brackets
+        const SPAIN_BRACKETS = [
+            { max: 6000, rate: 0.19 },
+            { max: 50000, rate: 0.21 },
+            { max: 200000, rate: 0.23 },
+            { max: 300000, rate: 0.27 },
+            { max: Infinity, rate: 0.28 }
+        ];
+        const UK_BRACKETS = [
+            { max: 12570, rate: 0.00 },
+            { max: 50270, rate: 0.20 },
+            { max: 125140, rate: 0.40 },
+            { max: Infinity, rate: 0.45 }
+        ];
+        
+        // Exchange rates (initial placeholder values)
+        let exchangeRates = {
+            USD: 1,
+            GBP: 0.785,
+            EUR: 0.93
+        };
+        
+        // Fetch live exchange rates
+        async function fetchExchangeRates() {
+            try {
+                const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+                const data = await response.json();
+                exchangeRates = {
+                    USD: 1,
+                    GBP: data.rates.GBP,
+                    EUR: data.rates.EUR
+                };
+                updateExchangeRateInfo();
+            } catch (error) {
+                console.error('Failed to fetch exchange rates. Using defaults:', error);
+            }
+        }
+        
+        // Update exchange rate info display
+        function updateExchangeRateInfo() {
+            const displayCurrency = displayCurrencySelect.value;
+            const rates = exchangeRates;
+            let info = `1 USD = ${rates.EUR.toFixed(4)} EUR | `;
+            info += `1 USD = ${rates.GBP.toFixed(4)} GBP`;
+            if (displayCurrency !== 'USD') {
+                info += ` | 1 ${displayCurrency} = ${(1 / rates[displayCurrency]).toFixed(4)} USD`;
+            }
+            exchangeRateInfo.textContent = info;
+        }
+        
+        // Convert amount to display currency
+        function convertToDisplayCurrency(amount, fromCurrency) {
+            const displayCurrency = displayCurrencySelect.value;
+            // Convert to USD first
+            const amountUSD = amount / exchangeRates[fromCurrency];
+            // Convert to display currency
+            return amountUSD * exchangeRates[displayCurrency];
+        }
+        
+        // Format currency
+        function formatCurrency(amount, currency) {
+            const symbols = {
+                USD: '$',
+                GBP: '£',
+                EUR: '€'
+            };
+            return `${symbols[currency]}${amount.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            })}`;
+        }
+        
+        // Calculate Spain taxes
+        function calculateSpainTax(incomeEUR, expensesEUR) {
+            // Spain doesn't allow expense deductions for CFD traders (as per landing page agreement)
+            const taxableIncome = incomeEUR;
+            // Calculate without expenses for comparison
+            let taxWithoutExpenses = 0;
+            let remaining = incomeEUR;
+            for (const bracket of SPAIN_BRACKETS) {
+                if (remaining <= 0) break;
+                const bracketMax = bracket.max;
+                const bracketRate = bracket.rate;
+                const taxableAmount = Math.min(remaining, bracketMax - (taxWithoutExpenses > 0 ? bracketMax : 0));
+                if (taxableAmount <= 0) continue;
+                taxWithoutExpenses += taxableAmount * bracketRate;
+                remaining -= taxableAmount;
+            }
+            // Calculate with actual taxable income
+            let totalTax = 0;
+            const breakdown = [];
+            remaining = taxableIncome;
+            for (const bracket of SPAIN_BRACKETS) {
+                if (remaining <= 0) break;
+                const bracketMax = bracket.max;
+                const bracketRate = bracket.rate;
+                const taxableAmount = Math.min(remaining, bracketMax - (breakdown.reduce((sum, item) => sum + item.amount, 0)));
+                if (taxableAmount <= 0) continue;
+                const taxInBracket = taxableAmount * bracketRate;
+                totalTax += taxInBracket;
+                breakdown.push({
+                    range: bracketMax === Infinity ? 
+                        `Above €${formatNumber(SPAIN_BRACKETS[SPAIN_BRACKETS.length - 2].max)}` : 
+                        `€${formatNumber(breakdown.reduce((sum, item) => sum + item.amount, 0))} - €${formatNumber(bracketMax)}`,
+                    rate: `${(bracketRate * 100)}%`,
+                    amount: taxableAmount,
+                    tax: taxInBracket
+                });
+                remaining -= taxableAmount;
+            }
+            const transactionTax = incomeEUR * 0.002;
+            const takehome = taxableIncome - totalTax - transactionTax - expensesEUR;
+            return {
+                totalTax,
+                transactionTax,
+                takehome,
+                breakdown,
+                taxWithoutExpenses
+            };
+        }
+        
+        // Calculate UK taxes
+        function calculateUKTax(incomeGBP, expensesGBP) {
+            // Calculate without expenses first
+            let taxWithoutExpenses = 0;
+            let remaining = incomeGBP;
+            let prevThreshold = 0;
+            for (const bracket of UK_BRACKETS) {
+                if (remaining <= 0) break;
+                const taxableAmount = Math.min(remaining, bracket.max - prevThreshold);
+                taxWithoutExpenses += taxableAmount * bracket.rate;
+                remaining -= taxableAmount;
+                prevThreshold = bracket.max;
+            }
+            // Now calculate with expenses
+            const taxableIncome = Math.max(0, incomeGBP - expensesGBP);
+            let totalTax = 0;
+            const breakdown = [];
+            prevThreshold = 0;
+            remaining = taxableIncome;
+            for (const bracket of UK_BRACKETS) {
+                if (remaining <= 0) break;
+                const bracketMax = bracket.max;
+                const bracketRate = bracket.rate;
+                const taxableAmount = Math.min(remaining, bracketMax - prevThreshold);
+                if (taxableAmount <= 0) continue;
+                const taxInBracket = taxableAmount * bracketRate;
+                totalTax += taxInBracket;
+                breakdown.push({
+                    range: bracket.max === Infinity ? 
+                        `Above £${formatNumber(UK_BRACKETS[UK_BRACKETS.length - 2].max)}` : 
+                        `£${formatNumber(prevThreshold)} - £${formatNumber(bracketMax)}`,
+                    rate: bracketRate ? `${(bracketRate * 100)}%` : "0%",
+                    amount: taxableAmount,
+                    tax: taxInBracket
+                });
+                remaining -= taxableAmount;
+                prevThreshold = bracketMax;
+            }
+            const takehome = taxableIncome - totalTax;
+            return {
+                totalTax,
+                takehome,
+                breakdown,
+                taxWithoutExpenses
+            };
+        }
+        
+        // Display Spain results
+        function displaySpainResults(result, incomeEUR, expensesEUR, displayCurrency) {
+            spainBreakdown.innerHTML = '';
+            result.breakdown.forEach(bracket => {
+                const bracketDiv = document.createElement('div');
+                bracketDiv.className = 'tax-item';
+                const taxDisplay = convertToDisplayCurrency(bracket.tax, 'EUR');
+                bracketDiv.innerHTML = `
+                    <span>${bracket.range} (${bracket.rate}):</span>
+                    <span>${formatCurrency(taxDisplay, displayCurrency)}</span>
+                `;
+                spainBreakdown.appendChild(bracketDiv);
+            });
+            const totalTaxDisplay = convertToDisplayCurrency(result.totalTax, 'EUR');
+            const transactionTaxDisplay = convertToDisplayCurrency(result.transactionTax, 'EUR');
+            const takehomeDisplay = convertToDisplayCurrency(result.takehome, 'EUR');
+            const expenseSavings = convertToDisplayCurrency(result.taxWithoutExpenses - result.totalTax, 'EUR');
+            spainTotalTax.textContent = formatCurrency(totalTaxDisplay, displayCurrency);
+            spainTransactionTax.textContent = formatCurrency(transactionTaxDisplay, displayCurrency);
+            spainTakehome.textContent = formatCurrency(takehomeDisplay, displayCurrency);
+            spainExpenseSavings.textContent = formatCurrency(expenseSavings, displayCurrency);
+        }
+        
+        // Display UK results
+        function displayUKResults(result, incomeGBP, expensesGBP, displayCurrency) {
+            ukBreakdown.innerHTML = '';
+            result.breakdown.forEach(bracket => {
+                if (bracket.rate === "0%") return;
+                const bracketDiv = document.createElement('div');
+                bracketDiv.className = 'tax-item';
+                const taxDisplay = convertToDisplayCurrency(bracket.tax, 'GBP');
+                bracketDiv.innerHTML = `
+                    <span>${bracket.range} (${bracket.rate}):</span>
+                    <span>${formatCurrency(taxDisplay, displayCurrency)}</span>
+                `;
+                ukBreakdown.appendChild(bracketDiv);
+            });
+            const totalTaxDisplay = convertToDisplayCurrency(result.totalTax, 'GBP');
+            const takehomeDisplay = convertToDisplayCurrency(result.takehome, 'GBP');
+            const expenseSavings = convertToDisplayCurrency(result.taxWithoutExpenses - result.totalTax, 'GBP');
+            ukTotalTax.textContent = formatCurrency(totalTaxDisplay, displayCurrency);
+            ukTakehome.textContent = formatCurrency(takehomeDisplay, displayCurrency);
+            ukExpenseSavings.textContent = formatCurrency(expenseSavings, displayCurrency);
+        }
+        
+        // Format numbers
+        function formatNumber(num) {
+            return num.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+        
+        // Main calculation function
+        async function calculateTaxes() {
+            const income = parseFloat(incomeInput.value) || 0;
+            const expenses = parseFloat(expensesInput.value) || 0;
+            const currency = currencySelect.value;
+            const expenseCurrency = expenseCurrencySelect.value;
+            if (isNaN(income) || income < 0) {
+                alert("Please enter a valid income amount");
+                return;
+            }
+            // Update exchange rates
+            await fetchExchangeRates();
+            // Convert to base currencies
+            let incomeEUR, incomeGBP;
+            let expensesEUR, expensesGBP;
+            switch(currency) {
+                case 'USD':
+                    incomeEUR = income * exchangeRates.EUR;
+                    incomeGBP = income * exchangeRates.GBP;
+                    break;
+                case 'GBP':
+                    incomeEUR = income / exchangeRates.GBP * exchangeRates.EUR;
+                    incomeGBP = income;
+                    break;
+                case 'EUR':
+                    incomeEUR = income;
+                    incomeGBP = income / exchangeRates.EUR * exchangeRates.GBP;
+                    break;
+            }
+            switch(expenseCurrency) {
+                case 'USD':
+                    expensesEUR = expenses * exchangeRates.EUR;
+                    expensesGBP = expenses * exchangeRates.GBP;
+                    break;
+                case 'GBP':
+                    expensesEUR = expenses / exchangeRates.GBP * exchangeRates.EUR;
+                    expensesGBP = expenses;
+                    break;
+                case 'EUR':
+                    expensesEUR = expenses;
+                    expensesGBP = expenses / exchangeRates.EUR * exchangeRates.GBP;
+                    break;
+            }
+            // Calculate taxes
+            const spainResult = calculateSpainTax(incomeEUR, expensesEUR);
+            const ukResult = calculateUKTax(incomeGBP, expensesGBP);
+            // Display results
+            const displayCurrency = displayCurrencySelect.value;
+            displayUKResults(ukResult, incomeGBP, expensesGBP, displayCurrency);
+            displaySpainResults(spainResult, incomeEUR, expensesEUR, displayCurrency);
+            // Show results
+            resultsDiv.style.display = 'block';
+        }
+        
+        // Event listeners
+        calculateBtn.addEventListener('click', calculateTaxes);
+        displayCurrencySelect.addEventListener('change', () => {
+            if (resultsDiv.style.display === 'block') {
+                calculateTaxes();
+            }
+        });
+        // Landing page interactions
         disclaimerCheck.addEventListener('change', function() {
             proceedBtn.disabled = !this.checked;
         });
-        
-        // Show calculator when proceed button is clicked
         proceedBtn.addEventListener('click', function() {
             landingDiv.style.display = 'none';
             calculatorDiv.style.display = 'block';
+            resultsDiv.style.display = 'none';
         });
-        
-        // ... (rest of the calculator JavaScript remains unchanged) ...
+        // Initialize
+        fetchExchangeRates();
     </script>
 </body>
 </html>
